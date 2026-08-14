@@ -1,13 +1,50 @@
-#ifndef IMAGE_COMMANDS_H
-#define IMAGE_COMMANDS_H
+#ifndef IMAGE_COMMAND_H
+#define IMAGE_COMMAND_H
 
-#include "Command.h"
 #include "Image.h"
 #include <vector>
+#include <algorithm>
 
-class EditImageCommand : public Command {
+// ==========================================
+// LỚP CHA ABSTRACT (Base Command)
+// ==========================================
+class ImageCommand {
+protected:
+    std::vector<Image>& images; // Dùng chung cho tất cả lệnh
+
+    // Hàm phụ dùng chung để tìm ảnh theo ID
+    auto findImageById(int id) {
+        return std::find_if(images.begin(), images.end(), [id](const Image& img) {
+            return img.id == id;
+            });
+    }
+
+public:
+    explicit ImageCommand(std::vector<Image>& imgs) : images(imgs) {}
+    virtual ~ImageCommand() = default;
+
+    virtual void execute() = 0;
+    virtual void undo() = 0;
+};
+
+// ==========================================
+// CÁC LỚP CON CỤ THỂ (Concrete Commands)
+// ==========================================
+
+// 1. Thêm ảnh
+class AddImageCommand : public ImageCommand {
 private:
-    std::vector<Image>& images;
+    Image imageToAdd;
+
+public:
+    AddImageCommand(std::vector<Image>& imgs, const Image& img);
+    void execute() override;
+    void undo() override;
+};
+
+// 2. Sửa ảnh
+class EditImageCommand : public ImageCommand {
+private:
     int imageId;
     Image oldImage;
     Image newImage;
@@ -18,9 +55,9 @@ public:
     void undo() override;
 };
 
-class DeleteImageCommand : public Command {
+// 3. Xóa ảnh
+class DeleteImageCommand : public ImageCommand {
 private:
-    std::vector<Image>& images;
     int imageId;
     Image deletedImage;
     int deletedIndex{ -1 };
@@ -31,4 +68,4 @@ public:
     void undo() override;
 };
 
-#endif // IMAGE_COMMANDS_H
+#endif // IMAGE_COMMAND_H

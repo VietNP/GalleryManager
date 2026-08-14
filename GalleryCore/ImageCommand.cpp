@@ -1,15 +1,32 @@
-#include "ImageCommands.h"
-#include <algorithm>
+#include "ImageCommand.h"
 
-// --- EditImageCommand ---
+// ==========================================
+// 1. AddImageCommand
+// ==========================================
+AddImageCommand::AddImageCommand(std::vector<Image>& imgs, const Image& img)
+    : ImageCommand(imgs), imageToAdd(img) {
+}
+
+void AddImageCommand::execute() {
+    images.push_back(imageToAdd);
+}
+
+void AddImageCommand::undo() {
+    auto it = findImageById(imageToAdd.id);
+    if (it != images.end()) {
+        images.erase(it);
+    }
+}
+
+// ==========================================
+// 2. EditImageCommand
+// ==========================================
 EditImageCommand::EditImageCommand(std::vector<Image>& imgs, int id, const Image& updatedImg)
-    : images(imgs), imageId(id), newImage(updatedImg) {
+    : ImageCommand(imgs), imageId(id), newImage(updatedImg) {
 }
 
 void EditImageCommand::execute() {
-    auto it = std::find_if(images.begin(), images.end(), [this](const Image& img) {
-        return img.id == imageId;
-        });
+    auto it = findImageById(imageId);
     if (it != images.end()) {
         oldImage = *it;
         *it = newImage;
@@ -17,23 +34,21 @@ void EditImageCommand::execute() {
 }
 
 void EditImageCommand::undo() {
-    auto it = std::find_if(images.begin(), images.end(), [this](const Image& img) {
-        return img.id == imageId;
-        });
+    auto it = findImageById(imageId);
     if (it != images.end()) {
         *it = oldImage;
     }
 }
 
-// --- DeleteImageCommand ---
+// ==========================================
+// 3. DeleteImageCommand
+// ==========================================
 DeleteImageCommand::DeleteImageCommand(std::vector<Image>& imgs, int id)
-    : images(imgs), imageId(id) {
+    : ImageCommand(imgs), imageId(id) {
 }
 
 void DeleteImageCommand::execute() {
-    auto it = std::find_if(images.begin(), images.end(), [this](const Image& img) {
-        return img.id == imageId;
-        });
+    auto it = findImageById(imageId);
     if (it != images.end()) {
         deletedIndex = static_cast<int>(std::distance(images.begin(), it));
         deletedImage = *it;
