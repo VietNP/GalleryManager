@@ -7,8 +7,8 @@
 
 class DatabaseRepository {
 private:
-    std::string strHost, strUser, strPassword, strDbname;
-    unsigned int nPort;
+    std::string m_strHost, m_strUser, m_strPassword, m_strDbname;
+    unsigned int m_nPort;
 
 public:
     DatabaseRepository(std::string host, std::string user, std::string password, std::string dbname, unsigned int port = 3306);

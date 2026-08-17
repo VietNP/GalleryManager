@@ -1,18 +1,13 @@
 #include "GalleryManager.h"
-#include "ImageCommands.h"
 
-void GalleryManager::executeCommand(std::shared_ptr<Command> cmd) {
+void GalleryManager::executeCommand(std::shared_ptr<ImageCommand> cmd) {
     cmd->execute();
     undoStack.push(cmd);
-
-    while (!redoStack.empty()) {
-        redoStack.pop();
-    }
+    while (!redoStack.empty()) redoStack.pop();
 }
 
 bool GalleryManager::undo() {
     if (undoStack.empty()) return false;
-
     auto cmd = undoStack.top();
     undoStack.pop();
     cmd->undo();
@@ -22,12 +17,16 @@ bool GalleryManager::undo() {
 
 bool GalleryManager::redo() {
     if (redoStack.empty()) return false;
-
     auto cmd = redoStack.top();
     redoStack.pop();
     cmd->execute();
     undoStack.push(cmd);
     return true;
+}
+
+void GalleryManager::addImage(const Image& img) {
+    auto cmd = std::make_shared<AddImageCommand>(images, img);
+    executeCommand(cmd);
 }
 
 void GalleryManager::editImage(int id, const Image& newImgData) {

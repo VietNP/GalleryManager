@@ -2,14 +2,14 @@
 #include <mysql/mysql.h>
 #include <iostream>
 
-DatabaseRepository::DatabaseRepository(std::string host, std::string user, std::string password, std::string dbname, unsigned int prt = 3306)
-    : host(h), user(u), password(p), dbname(db), port(prt) {
+DatabaseRepository::DatabaseRepository(std::string host, std::string user, std::string password, std::string dbname, unsigned int prt)
+    : m_strHost(host), m_strUser(user), m_strPassword(password), m_strDbname(dbname), m_nPort(prt) {
 }
 
 std::vector<Image> DatabaseRepository::loadAll() {
     std::vector<Image> list;
     MYSQL* conn = mysql_init(NULL);
-    if (!mysql_real_connect(conn, host.c_str(), user.c_str(), password.c_str(), dbname.c_str(), port, NULL, 0)) {
+    if (!mysql_real_connect(conn, m_strHost.c_str(), m_strUser.c_str(), m_strPassword.c_str(), m_strDbname.c_str(), m_nPort, NULL, 0)) {
         mysql_close(conn);
         return list;
     }
@@ -32,7 +32,7 @@ std::vector<Image> DatabaseRepository::loadAll() {
 
 bool DatabaseRepository::saveAll(const std::vector<Image>& images) {
     MYSQL* conn = mysql_init(NULL);
-    if (!mysql_real_connect(conn, host.c_str(), user.c_str(), password.c_str(), dbname.c_str(), port, NULL, 0)) {
+    if (!mysql_real_connect(conn, m_strHost.c_str(), m_strUser.c_str(), m_strPassword.c_str(), m_strDbname.c_str(), m_nPort, NULL, 0)) {
         return false;
     }
 
