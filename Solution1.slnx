@@ -3,5 +3,8 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="GalleryCore/GalleryCore.vcxproj" />
+  <Project Path="GalleryCore/GalleryCore.vcxproj" Id="dca40a42-2040-4008-bae9-27ded8d60628" />
+  <Project Path="GalleryUI/GalleryUI.vcxproj" Id="f439c6b7-984e-4717-94b1-d92268d09356">
+    <Platform Project="x64" />
+  </Project>
 </Solution>
