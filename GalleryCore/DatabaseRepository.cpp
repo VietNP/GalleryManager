@@ -1,6 +1,11 @@
 #include "DatabaseRepository.h"
 #include <mysql/mysql.h>
 #include <iostream>
+#include "DatabaseRepository.h"
+#include <mysql/mysql.h>
+
+// Thêm dòng này để auto-link thư viện MySQL
+#pragma comment(lib, "libmysql.lib")
 
 DatabaseRepository::DatabaseRepository(std::string host, std::string user, std::string password, std::string dbname, unsigned int prt)
     : m_strHost(host), m_strUser(user), m_strPassword(password), m_strDbname(dbname), m_nPort(prt) {
@@ -45,4 +50,32 @@ bool DatabaseRepository::saveAll(const std::vector<Image>& images) {
     }
     mysql_close(conn);
     return true;
+}
+
+bool DatabaseRepository::logAction(const std::string& actionType,
+    const std::string& payloadRedo,
+    const std::string& payloadUndo)
+{
+    MYSQL* conn = mysql_init(nullptr);
+    if (!conn) return false;
+
+    // Kết nối đến Database 'gallery_db' (User: root, Mật khẩu: để trống)
+    if (!mysql_real_connect(conn, m_strHost.c_str(), m_strUser.c_str(),
+        m_strPassword.c_str(), "gallery_db",
+        m_nPort, nullptr, 0))
+    {
+        mysql_close(conn);
+        return false;
+    }
+
+    // Ghép câu lệnh INSERT
+    std::string query = "INSERT INTO action_logs (action_type, payload_redo, payload_undo) VALUES ('"
+        + actionType + "', '"
+        + payloadRedo + "', '"
+        + payloadUndo + "');";
+
+    int result = mysql_query(conn, query.c_str());
+    mysql_close(conn);
+
+    return (result == 0);
 }

@@ -17,3 +17,5 @@ add_executable(GalleryApp
 )
 
 target_link_libraries(GalleryApp ${OpenCV_LIBS} ${MYSQL_LIB})
+
+#libmysql.lib;opencv_core4.lib;opencv_imgproc4.lib;opencv_imgcodecs4.lib;opencv_highgui4.lib;%(AdditionalDependencies)

@@ -15,6 +15,7 @@ public:
 
     bool saveAll(const std::vector<Image>& images);
     std::vector<Image> loadAll();
+    bool logAction(const std::string& actionType, const std::string& payloadRedo, const std::string& payloadUndo);
 };
 
 #endif // DATABASE_REPOSITORY_H

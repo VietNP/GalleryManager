@@ -1,20 +1,27 @@
 #ifndef OPENCV_IMAGE_PROCESSOR_H
 #define OPENCV_IMAGE_PROCESSOR_H
 
-#include "Image.h"
-#include <vector>
-#include <unordered_map>
+// Tự động khai báo liên kết với các module OpenCV của vcpkg
+#ifdef _DEBUG
+#pragma comment(lib, "opencv_core4d.lib")
+#pragma comment(lib, "opencv_imgproc4d.lib")
+#pragma comment(lib, "opencv_imgcodecs4d.lib")
+#else
+#pragma comment(lib, "opencv_core4.lib")
+#pragma comment(lib, "opencv_imgproc4.lib")
+#pragma comment(lib, "opencv_imgcodecs4.lib")
+#endif
+
+#include <string>
+#include <cstdint>
 
 class OpenCVImageProcessor {
 public:
-    uint64_t calculatePHash(const std::string& filepath);
-    bool isSimilar(uint64_t hash1, uint64_t hash2, int maxDistance = 5);
+    // Tính mã pHash 64-bit bằng thuật toán Discrete Cosine Transform (DCT)
+    static uint64_t computePHash(const std::string& path);
 
-    // Tìm các nhóm ảnh tương đồng (trùng tư thế, góc chụp)
-    std::unordered_map<uint64_t, std::vector<Image>> findSimilarGroups(
-        const std::vector<Image>& images,
-        int maxDistance = 5
-    );
+    // Tính khoảng cách Hamming giữa 2 mã pHash (trả về 0 nếu 2 ảnh giống hệt nhau)
+    static int hammingDistance(uint64_t hash1, uint64_t hash2);
 };
 
 #endif // OPENCV_IMAGE_PROCESSOR_H
